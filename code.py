@@ -17,6 +17,10 @@ from adafruit_led_animation.sequence import AnimationSequence
 from adafruit_led_animation.sequence import AnimateOnce
 from adafruit_led_animation import color
 
+from adafruit_seesaw.seesaw import Seesaw
+from adafruit_seesaw.analoginput import AnalogInput
+import adafruit_seesaw.neopixel # It has to be imported this way since we're also using standard neopixel libraries.
+
 # Defining which pins are doing what on our QT Py RP2040.
 pixel_pinA = board.A0
 pixel_pinB = board.A1
@@ -25,15 +29,26 @@ pixel_pinC = board.A2
 switch = digitalio.DigitalInOut(board.TX)
 switch.switch_to_input(pull=digitalio.Pull.UP)
 
+# Creating the two NeoSliders used to adjust brightness and intensity.
+# Note that you need to cut the A0 address jumper on the bottom of the intensity NeoSlider to set a different I2C address.
+# Read more about the address jumpers at https://learn.adafruit.com/adafruit-neoslider/pinouts
+
+brightslider = Seesaw(board.STEMMA_I2C(), 0x30)
+brightpot = AnalogInput(brightslider, 18)
+
+intensityslider = Seesaw(board.STEMMA_I2C(), 0x31)
+intensitypot = AnalogInput(intensityslider, 18)
+
 # Update to match the number of NeoPixels you have connected
 pixel_num = 20
 
 # Sets system-level brightness. This is a number between 0 and 1.
-system_brightness = 0.3
+# Because the NeoSliders send readings between 0 and 1023, we do math.
+system_brightness = brightpot / 1023
 
 # Sets system-level animation speed. Each animation has a constant multiplied by this.
 # 1.0 is normal speed. 0.5 is double speed, 2.0 is half speed, etc.
-system_speed = 1
+system_speed = 1 * intensitypot / 512
 
 pixelsA = neopixel.NeoPixel(pixel_pinA, pixel_num, brightness=system_brightness, auto_write=False)
 pixelsB = neopixel.NeoPixel(pixel_pinB, pixel_num, brightness=system_brightness, auto_write=False)
@@ -42,7 +57,7 @@ pixelsC = neopixel.NeoPixel(pixel_pinC, pixel_num, brightness=system_brightness,
 # These variables dictate the garnetcycle animation.  We use the hex codes universally instead of the
 # Adafruit libraries for colors because we want to define garnet to the University of South Carolina's
 # definition.  And then we redefine white so it isn't quite so eye-searingly bright while running.
-garnetcycle_speed = 0.33*system_speed
+garnetcycle_speed = 0.33 * system_speed
 garnet = 0x73000a
 white = 0x555555
 

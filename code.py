@@ -42,13 +42,19 @@ intensitypot = AnalogInput(intensityslider, 18)
 # Update to match the number of NeoPixels you have connected
 pixel_num = 20
 
+def brightslider_to_brightness(value):
+    return value / 1023
+
+def intensityslider_to_intensity(value):
+    return value / 512
+
 # Sets system-level brightness. This is a number between 0 and 1.
 # Because the NeoSliders send readings between 0 and 1023, we do math.
-system_brightness = brightpot / 1023
+system_brightness = brightslider_to_brightness(brightpot.value)
 
 # Sets system-level animation speed. Each animation has a constant multiplied by this.
 # 1.0 is normal speed. 0.5 is double speed, 2.0 is half speed, etc.
-system_speed = 1 * intensitypot / 512
+system_speed = intensityslider_to_intensity(intensitypot.value)
 
 pixelsA = neopixel.NeoPixel(pixel_pinA, pixel_num, brightness=system_brightness, auto_write=False)
 pixelsB = neopixel.NeoPixel(pixel_pinB, pixel_num, brightness=system_brightness, auto_write=False)
@@ -57,7 +63,7 @@ pixelsC = neopixel.NeoPixel(pixel_pinC, pixel_num, brightness=system_brightness,
 # These variables dictate the garnetcycle animation.  We use the hex codes universally instead of the
 # Adafruit libraries for colors because we want to define garnet to the University of South Carolina's
 # definition.  And then we redefine white so it isn't quite so eye-searingly bright while running.
-garnetcycle_speed = 0.33 * system_speed
+garnetcycle_speed = 0.25 * system_speed
 garnet = 0x73000a
 white = 0x555555
 
@@ -67,7 +73,7 @@ garnetcycleA = ColorCycle(pixelsA, garnetcycle_speed, colors=(garnet, white, whi
 sparkleA = Sparkle(pixelsA, speed=0.02*system_speed, color=0x73000a, num_sparkles=6)
 cometA = Comet(pixelsA, 0.05*system_speed, garnet, tail_length=5)
 cometrevA = Comet(pixelsA, 0.05*system_speed, garnet, tail_length=5, reverse=True)
-rainbowA = Rainbow(pixelsA, 0.05*system_speed, precompute_rainbow=True)
+rainbowA = Rainbow(pixelsA, 0.20*system_speed, precompute_rainbow=True)
 rainbowchaseA = RainbowChase(pixelsA, 0.03*system_speed, size=2, spacing=3, reverse=True)
 rainbowcometA = RainbowComet(pixelsA, 0.05*system_speed)
 rainbowcometrevA = RainbowComet(pixelsA, 0.05*system_speed, reverse=True)
@@ -79,7 +85,7 @@ garnetcycleB = ColorCycle(pixelsB, garnetcycle_speed, colors=(white, garnet, whi
 sparkleB = Sparkle(pixelsB, speed=0.02*system_speed, color=0x73000a, num_sparkles=6)
 cometB = Comet(pixelsB, 0.05*system_speed, garnet, tail_length=5)
 cometrevB = Comet(pixelsB, 0.05*system_speed, garnet, tail_length=5, reverse=True)
-rainbowB = Rainbow(pixelsB, 0.05*system_speed, precompute_rainbow=True)
+rainbowB = Rainbow(pixelsB, 0.20*system_speed, precompute_rainbow=True)
 rainbowchaseB = RainbowChase(pixelsB, 0.03*system_speed, size=2, spacing=3)
 rainbowcometB = RainbowComet(pixelsB, 0.05*system_speed)
 rainbowcometrevB = RainbowComet(pixelsB, 0.05*system_speed, reverse=True)
@@ -91,7 +97,7 @@ garnetcycleC = ColorCycle(pixelsC, garnetcycle_speed, colors=(white, white, garn
 sparkleC = Sparkle(pixelsC, speed=0.02*system_speed, color=0x73000a, num_sparkles=6)
 cometC = Comet(pixelsC, 0.05*system_speed, garnet, tail_length=5)
 cometrevC = Comet(pixelsC, 0.05*system_speed, garnet, tail_length=5, reverse=True)
-rainbowC = Rainbow(pixelsC, 0.05*system_speed, precompute_rainbow=True)
+rainbowC = Rainbow(pixelsC, 0.20*system_speed, precompute_rainbow=True)
 rainbowchaseC = RainbowChase(pixelsC, 0.03*system_speed, size=2, spacing=3, reverse=True)
 rainbowcometC = RainbowComet(pixelsC, 0.05*system_speed)
 rainbowcometrevC = RainbowComet(pixelsC, 0.05*system_speed, reverse=True)
@@ -132,3 +138,6 @@ while True:
     else:
         animations.animate()
         pass
+
+system_brightness = brightslider_to_brightness(brightpot.value)
+system_speed = intensityslider_to_intensity(intensitypot.value)
